@@ -1,4 +1,3 @@
-
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import openai
@@ -40,9 +39,25 @@ def chat():
         )
         reply = response.choices[0].message.content.strip()
         return jsonify({ "reply": reply })
+
+    except openai.OpenAIError as e:
+        print("OpenAI error:", e)
+        fallback_response = get_fallback_response(user_msg)
+        return jsonify({ "reply": fallback_response }), 200
     except Exception as e:
-        print("Error:", e)
-        return jsonify({ "reply": f"Sorry, something went wrong. ({e})" }), 500
+        print("Server error:", e)
+        return jsonify({ "reply": "Sorry, something went wrong." }), 500
+
+def get_fallback_response(message):
+    message_lower = message.lower()
+    if "open" in message_lower or "hours" in message_lower:
+        return "We're open every day from 12 PM to 10 PM!"
+    elif "pie" in message_lower:
+        return "Our ice cream pies start at $19.95 depending on the flavor."
+    elif "book" in message_lower or "bus" in message_lower:
+        return "You can book our Ice Cream Bus starting at $249! Let me know the event details."
+    else:
+        return "I'm currently offline, but feel free to ask about hours, booking, or pricing!"
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
