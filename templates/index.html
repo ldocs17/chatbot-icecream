@@ -73,6 +73,29 @@
       background-color: var(--bubble-color);
     }
 
+    .bot-message {
+      font-family: "Comic Sans MS", "Comic Sans", cursive;
+      font-weight: bold;
+      color: #333;
+      background: #fff8e1;
+      padding: 5px 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      margin-top: 10px;
+      display: inline-block;
+    }
+
+    .user-message {
+      font-family: sans-serif;
+      background: #e0f7fa;
+      padding: 5px 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      margin-top: 10px;
+      display: inline-block;
+      align-self: flex-end;
+    }
+
     #chatbot-input {
       display: flex;
       border-top: 1px solid #ccc;
@@ -183,6 +206,7 @@
     function appendMessage(sender, message) {
       const msg = document.createElement('div');
       msg.textContent = `${sender}: ${message}`;
+      msg.className = sender === 'Bot' ? 'bot-message' : 'user-message';
       messagesContainer.appendChild(msg);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
