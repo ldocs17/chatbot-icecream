@@ -35,7 +35,7 @@
       border-radius: 50%;
     }
 
-    #chatbot-help-text {
+    #scoop-thought-bubble {
       position: fixed;
       bottom: 100px;
       right: 100px;
@@ -77,21 +77,22 @@
       font-family: "Comic Sans MS", "Comic Sans", cursive;
       font-weight: bold;
       color: #333;
-      background: #fff8e1;
+      background: #f19581;
       padding: 5px 10px;
       border-radius: 10px;
       margin-bottom: 20px;
-      margin-top: 10px;
+      margin-top: 30px;
       display: inline-block;
     }
 
     .user-message {
-      font-family: sans-serif;
-      background: #e0f7fa;
+      font-family: "Comic Sans MS", "Comic Sans", cursive;
+      font-weight: bold;
+      background: #81bcf1;
       padding: 5px 10px;
       border-radius: 10px;
       margin-bottom: 20px;
-      margin-top: 10px;
+      margin-top: 30px;
       display: inline-block;
       align-self: flex-end;
     }
@@ -117,35 +118,10 @@
       padding: 10px;
       cursor: pointer;
     }
-
-    #booking-form {
-      display: none;
-      padding: 10px;
-      font-family: sans-serif;
-      font-size: 14px;
-    }
-
-    #booking-form input, #booking-form textarea {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-
-    #booking-form button {
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 10px;
-      cursor: pointer;
-      width: 100%;
-    }
   </style>
 </head>
 <body>
-  <div id="chatbot-help-text">If you have any questions, ask me!</div>
+  <div id="scoop-thought-bubble">Scoop is here to help!</div>
   <button id="chatbot-toggle">
     <img src="/static/chatbot-icon-optimized.png" alt="Chatbot Icon" />
   </button>
@@ -155,26 +131,20 @@
       <input type="text" id="user-message" placeholder="Ask a question..." />
       <button onclick="sendMessage()">Send</button>
     </div>
-    <div id="booking-form">
-      <h4>Book Our Ice Cream Bus</h4>
-      <input type="text" id="name" placeholder="Your Name" />
-      <input type="email" id="email" placeholder="Your Email" />
-      <input type="date" id="date" placeholder="Event Date" />
-      <textarea id="details" placeholder="Event Details"></textarea>
-      <button onclick="submitBooking()">Submit Booking</button>
-    </div>
   </div>
 
   <script>
     const toggleButton = document.getElementById('chatbot-toggle');
     const chatbotWindow = document.getElementById('chatbot-window');
-    const helpText = document.getElementById('chatbot-help-text');
+    const thoughtBubble = document.getElementById('scoop-thought-bubble');
     const messagesContainer = document.getElementById('chatbot-messages');
-    const bookingForm = document.getElementById('booking-form');
 
     toggleButton.addEventListener('click', () => {
       chatbotWindow.style.display = chatbotWindow.style.display === 'none' ? 'flex' : 'none';
-      helpText.style.display = 'none';
+      thoughtBubble.style.display = 'none';
+      if (messagesContainer.innerHTML === '') {
+        appendMessage('Scoop', "Hey, my name is Scoop. How can I help you?");
+      }
     });
 
     async function sendMessage() {
@@ -185,11 +155,6 @@
       appendMessage('You', userMessage);
       input.value = '';
 
-      if (userMessage.toLowerCase().includes("book")) {
-        bookingForm.style.display = 'block';
-        return;
-      }
-
       try {
         const res = await fetch('/api/chat', {
           method: 'POST',
@@ -197,37 +162,19 @@
           body: JSON.stringify({ message: userMessage })
         });
         const data = await res.json();
-        appendMessage('Bot', data.reply);
+        appendMessage('Scoop', data.reply);
       } catch (err) {
-        appendMessage('Bot', 'Sorry, something went wrong.');
+        appendMessage('Scoop', 'Sorry, something went wrong.');
       }
     }
 
     function appendMessage(sender, message) {
       const msg = document.createElement('div');
       msg.textContent = `${sender}: ${message}`;
-      msg.className = sender === 'Bot' ? 'bot-message' : 'user-message';
+      msg.className = sender === 'Scoop' ? 'bot-message' : 'user-message';
       messagesContainer.appendChild(msg);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
-
-    function submitBooking() {
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const date = document.getElementById('date').value;
-      const details = document.getElementById('details').value;
-
-      if (!name || !email || !date || !details) {
-        alert("Please fill out all fields.");
-        return;
-      }
-
-      console.log("Booking submitted:", { name, email, date, details });
-      appendMessage('Bot', `Thanks ${name}, your event on ${date} has been received. We'll contact you at ${email}!`);
-
-      bookingForm.style.display = 'none';
     }
   </script>
 </body>
 </html>
-
