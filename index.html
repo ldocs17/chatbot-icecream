@@ -1,0 +1,32 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ice Cream Chatbot</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <button id="chatbot-toggle">
+    <img src="/static/chatbot-icon.png" alt="Chatbot Icon" />
+    <span>If you have any questions, ask me!</span>
+  </button>
+  <div id="chatbot-window">
+    <div id="chatbot-messages"></div>
+    <div id="chatbot-input">
+      <input type="text" id="user-message" placeholder="Ask a question..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="booking-form">
+      <h4>Book Our Ice Cream Bus</h4>
+      <input type="text" id="name" placeholder="Your Name" />
+      <input type="email" id="email" placeholder="Your Email" />
+      <input type="date" id="date" placeholder="Event Date" />
+      <textarea id="details" placeholder="Event Details"></textarea>
+      <button onclick="submitBooking()">Submit Booking</button>
+    </div>
+  </div>
+  <script src="/static/script.js"></script>
+</body>
+</html>
