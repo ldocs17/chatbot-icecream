@@ -5,12 +5,126 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ice Cream Chatbot</title>
-  <link rel="stylesheet" href="/static/styles.css" />
+  <style>
+    :root {
+      --primary-color: #001f3f; /* Navy Blue */
+      --accent-color: #ff851b; /* Orange */
+      --text-color: white;
+      --bubble-color: #f0f0f0;
+    }
+
+    #chatbot-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary-color);
+      border: none;
+      cursor: pointer;
+      border-radius: 50%;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+
+    #chatbot-toggle img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+
+    #chatbot-help-text {
+      position: fixed;
+      bottom: 100px;
+      right: 100px;
+      background-color: var(--accent-color);
+      color: var(--text-color);
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: sans-serif;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #chatbot-window {
+      display: none;
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      width: 320px;
+      height: 450px;
+      background-color: var(--accent-color);
+      border: 2px solid var(--primary-color);
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #chatbot-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      font-family: sans-serif;
+      font-size: 14px;
+      background-color: var(--bubble-color);
+    }
+
+    #chatbot-input {
+      display: flex;
+      border-top: 1px solid #ccc;
+      background-color: var(--accent-color);
+    }
+
+    #chatbot-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      outline: none;
+      font-family: sans-serif;
+    }
+
+    #chatbot-input button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    #booking-form {
+      display: none;
+      padding: 10px;
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+
+    #booking-form input, #booking-form textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    #booking-form button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
+  <div id="chatbot-help-text">If you have any questions, ask me!</div>
   <button id="chatbot-toggle">
-    <img src="/static/chatbot-icon.png" alt="Chatbot Icon" />
-    <span>If you have any questions, ask me!</span>
+    <img src="/mnt/data/Gemini_Generated_Image_aq0jxeaq0jxeaq0j.png" alt="Chatbot Icon" />
   </button>
   <div id="chatbot-window">
     <div id="chatbot-messages"></div>
@@ -27,6 +141,69 @@
       <button onclick="submitBooking()">Submit Booking</button>
     </div>
   </div>
-  <script src="/static/script.js"></script>
+
+  <script>
+    const toggleButton = document.getElementById('chatbot-toggle');
+    const chatbotWindow = document.getElementById('chatbot-window');
+    const helpText = document.getElementById('chatbot-help-text');
+    const messagesContainer = document.getElementById('chatbot-messages');
+    const bookingForm = document.getElementById('booking-form');
+
+    toggleButton.addEventListener('click', () => {
+      chatbotWindow.style.display = chatbotWindow.style.display === 'none' ? 'flex' : 'none';
+      helpText.style.display = 'none';
+    });
+
+    async function sendMessage() {
+      const input = document.getElementById('user-message');
+      const userMessage = input.value.trim();
+      if (!userMessage) return;
+
+      appendMessage('You', userMessage);
+      input.value = '';
+
+      if (userMessage.toLowerCase().includes("book")) {
+        bookingForm.style.display = 'block';
+        return;
+      }
+
+      try {
+        const res = await fetch('http://localhost:5000/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: userMessage })
+        });
+        const data = await res.json();
+        appendMessage('Bot', data.reply);
+      } catch (err) {
+        appendMessage('Bot', 'Sorry, something went wrong.');
+      }
+    }
+
+    function appendMessage(sender, message) {
+      const msg = document.createElement('div');
+      msg.textContent = `${sender}: ${message}`;
+      messagesContainer.appendChild(msg);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function submitBooking() {
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const date = document.getElementById('date').value;
+      const details = document.getElementById('details').value;
+
+      if (!name || !email || !date || !details) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      console.log("Booking submitted:", { name, email, date, details });
+      appendMessage('Bot', `Thanks ${name}, your event on ${date} has been received. We'll contact you at ${email}!`);
+
+      bookingForm.style.display = 'none';
+    }
+  </script>
 </body>
 </html>
+
