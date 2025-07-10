@@ -46,6 +46,8 @@
       font-size: 14px;
       font-family: sans-serif;
       box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+      display: block;
+      z-index: 1000;
     }
 
     #chatbot-window {
@@ -140,10 +142,17 @@
     const messagesContainer = document.getElementById('chatbot-messages');
 
     toggleButton.addEventListener('click', () => {
-      chatbotWindow.style.display = chatbotWindow.style.display === 'none' ? 'flex' : 'none';
-      thoughtBubble.style.display = 'none';
-      if (messagesContainer.innerHTML === '') {
-        appendMessage('Scoop', "Hey, my name is Scoop. How can I help you?");
+      const isOpen = chatbotWindow.style.display === 'flex';
+      chatbotWindow.style.display = isOpen ? 'none' : 'flex';
+      thoughtBubble.style.display = isOpen ? 'block' : 'none';
+
+      if (!isOpen) {
+        // Delay the greeting slightly to simulate typing
+        setTimeout(() => {
+          if (!document.querySelector('.bot-message')) {
+            appendMessage('Scoop', "Hey, my name is Scoop. How can I help you?");
+          }
+        }, 300);
       }
     });
 
