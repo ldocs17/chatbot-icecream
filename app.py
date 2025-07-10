@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import openai
@@ -6,8 +7,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-
-openai.api_key = os.environ["OPENAI_API_KEY"]
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 store_knowledge = """Scoops – The Chatham Creamery is open daily from 12 PM to 10 PM. They are located at 228 Main St, Chatham, NJ 07928, phone (973) 507-9223.
 Popular flavors include Mint Chocolate Chip, Campfire S’mores, Moose Tracks, Chocolate Lover's, Sea Salt Caramel, and Peanut Butter Pie. Vegan oat-based flavors include mint cookie, raspberry chip, and chocolate.
@@ -29,7 +29,7 @@ def index():
 @app.route('/api/chat', methods=['POST'])
 def chat():
     user_msg = request.json.get("message", "")
-    
+
     try:
         response = openai.chat.completions.create(
             model="gpt-4o",
@@ -39,10 +39,11 @@ def chat():
             ]
         )
         reply = response.choices[0].message.content.strip()
-        return jsonify({"reply": reply})
+        return jsonify({ "reply": reply })
     except Exception as e:
-        return jsonify({"reply": f"Sorry, something went wrong. ({e})"}), 500
+        print("Error:", e)
+        return jsonify({ "reply": f"Sorry, something went wrong. ({e})" }), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=True)
